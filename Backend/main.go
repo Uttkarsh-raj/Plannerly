@@ -19,6 +19,7 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 	routes.UserRoutes(router)
+	log.Print(os.Getenv("SECRET_KEY"))
 
 	router.Use(middleware.Authentication())
 

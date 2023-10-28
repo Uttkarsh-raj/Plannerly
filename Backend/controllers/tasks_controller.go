@@ -23,12 +23,11 @@ func AddNewTask() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 		var task models.Task
-
+		defer cancel()
 		if err := c.BindJSON(&task); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		defer cancel()
 		log.Print(task)
 		task.ID = primitive.NewObjectID()
 		validationError := validate.Struct(task)
@@ -53,8 +52,52 @@ func AddNewTask() gin.HandlerFunc {
 
 func UpdateTask() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// ctx,cancel:=context.WithTimeout(context.Background(),100*time.Second)
+		taskId := c.Param("id")
+		var updateFields map[string]interface{}
 
+		if err := c.BindJSON(&updateFields); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+			return
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		defer cancel()
+
+		objID, err := primitive.ObjectIDFromHex(taskId)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Invalid ID format"})
+			return
+		}
+
+		update := bson.M{
+			"$set": updateFields,
+		}
+
+		// Check if the task exists before attempting to update it
+		var existingTask models.Task
+		err = taskCollection.FindOne(ctx, bson.M{"_id": objID}).Decode(&existingTask)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"success": false, "error": "Task not found"})
+			return
+		}
+
+		result, err := taskCollection.UpdateOne(ctx, bson.M{"_id": objID}, update)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			return
+		}
+		err = taskCollection.FindOne(ctx, bson.M{"_id": objID}).Decode(&existingTask)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			return
+		}
+
+		if result.ModifiedCount == 0 {
+			c.JSON(http.StatusOK, gin.H{"success": true, "data": existingTask})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"success": true, "data": existingTask})
 	}
 }
 
@@ -65,6 +108,7 @@ func GetTaskById() gin.HandlerFunc {
 
 		idParam := c.Param("id")
 		objID, err := primitive.ObjectIDFromHex(idParam)
+		defer cancel()
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "Invalid ID format"})
 			return

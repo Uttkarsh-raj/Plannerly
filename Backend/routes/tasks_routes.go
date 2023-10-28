@@ -9,7 +9,7 @@ import (
 func TaskRoutes(incomingRoutes *gin.Engine) {
 	incomingRoutes.Use(middleware.Authentication())
 	incomingRoutes.POST("/addTask", controllers.AddNewTask())
-	incomingRoutes.PATCH("/update", controllers.UpdateTask())
+	incomingRoutes.PATCH("/update/:id", controllers.UpdateTask())
 	incomingRoutes.GET("/getTasks", controllers.GetAllTask())
 	incomingRoutes.GET("/getTask/:id", controllers.GetTaskById())
 }

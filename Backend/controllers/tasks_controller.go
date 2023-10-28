@@ -184,3 +184,30 @@ func GetAllTask() gin.HandlerFunc {
 
 	}
 }
+
+func DeleteTask() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		idString := c.Param("id")
+		id, err := primitive.ObjectIDFromHex(idString)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+			return
+		}
+		var task models.Task
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+		err = taskCollection.FindOne(ctx, bson.M{"_id": id}).Decode(&task)
+		defer cancel()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": err.Error()})
+			return
+		}
+		_, err = taskCollection.DeleteOne(ctx, bson.M{"_id": id})
+		defer cancel()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"success": true, "data": task})
+	}
+}

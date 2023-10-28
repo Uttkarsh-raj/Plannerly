@@ -12,4 +12,5 @@ func TaskRoutes(incomingRoutes *gin.Engine) {
 	incomingRoutes.PATCH("/update/:id", controllers.UpdateTask())
 	incomingRoutes.GET("/getTasks", controllers.GetAllTask())
 	incomingRoutes.GET("/getTask/:id", controllers.GetTaskById())
+	incomingRoutes.DELETE("/delete/:id", controllers.DeleteTask())
 }

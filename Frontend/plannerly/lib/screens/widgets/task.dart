@@ -20,17 +20,18 @@ class _TaskState extends State<Task> {
           borderRadius: BorderRadius.circular(18),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(18.0),
+          padding: const EdgeInsets.all(10.0).copyWith(top: 15, bottom: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.radio_button_off,
-                    color: AppColors.white.withOpacity(0.3),
-                    size: 30,
-                  )),
+                onPressed: () {},
+                icon: Icon(
+                  Icons.done_outline,
+                  color: AppColors.white.withOpacity(0.3), //Colors.green
+                  size: 30,
+                ),
+              ),
               SizedBox(width: size.width * 0.06),
               Expanded(
                 child: Column(
@@ -63,6 +64,14 @@ class _TaskState extends State<Task> {
                       ),
                     ),
                   ],
+                ),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.delete_outline,
+                  color: Colors.red[400],
+                  size: 30,
                 ),
               ),
             ],

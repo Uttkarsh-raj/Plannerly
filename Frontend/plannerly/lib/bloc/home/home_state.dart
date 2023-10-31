@@ -10,7 +10,13 @@ final class HomeInitial extends HomeState {}
 
 class HomeLoadingState extends HomeState {}
 
-class HomeLoadedSuccessState extends HomeState {}
+class HomeLoadedSuccessState extends HomeState {
+  final List<TaskModel> regularTasks;
+  final List<TaskModel> urgentTasks;
+  HomeLoadedSuccessState(this.regularTasks, this.urgentTasks);
+}
+
+class HomeLoadedErrorState extends HomeState {}
 
 class HomeErrorState extends HomeState {}
 

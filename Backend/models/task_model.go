@@ -12,4 +12,5 @@ type Task struct {
 	Time        *string            `json:"time"`
 	Date        *string            `json:"date"`
 	Completed   bool               `json:"completed"`
+	Urgent      bool               `json:"urgent"`
 }

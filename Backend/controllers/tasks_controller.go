@@ -127,6 +127,106 @@ func GetTaskById() gin.HandlerFunc {
 	}
 }
 
+func GetUrgentTasks() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenString := c.GetHeader("token")
+		if tokenString == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "No token Provided."})
+			return
+		}
+		token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) { return []byte(SECRET_KEY), nil })
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Invalid Token"})
+			return
+		}
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			user_id := claims["Uid"].(string)
+			ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+			var tasks []models.Task
+
+			cursor, err := taskCollection.Find(ctx, bson.M{"user_id": user_id, "urgent": true})
+			defer cancel()
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+				return
+			}
+			defer cursor.Close(ctx)
+			for cursor.Next(ctx) {
+				var task models.Task
+				if err := cursor.Decode(&task); err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+					return
+				}
+				tasks = append(tasks, task)
+			}
+			if err := cursor.Err(); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+				return
+			}
+
+			response := gin.H{
+				"success": true,
+				"data":    tasks,
+			}
+
+			c.JSON(http.StatusOK, response)
+		} else {
+			c.JSON(http.StatusUnauthorized, gin.H{"sucess": false, "error": "Invalid token"})
+
+		}
+	}
+}
+
+func GetRegularTasks() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenString := c.GetHeader("token")
+		if tokenString == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "error": "No token Provided."})
+			return
+		}
+		token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) { return []byte(SECRET_KEY), nil })
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Invalid Token"})
+			return
+		}
+		if claims, ok := token.Claims.(jwt.MapClaims); token.Valid && ok {
+			user_id := claims["Uid"].(string)
+			ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+			var tasks []models.Task
+			cursor, err := taskCollection.Find(ctx, bson.M{"user_id": user_id, "urgent": false})
+			defer cancel()
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+				return
+			}
+			defer cursor.Close(ctx)
+			for cursor.Next(ctx) {
+				var task models.Task
+				if err := cursor.Decode(&task); err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+					return
+				}
+				tasks = append(tasks, task)
+			}
+
+			if err := cursor.Err(); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+				return
+			}
+
+			response := gin.H{
+				"success": true,
+				"data":    tasks,
+			}
+
+			c.JSON(http.StatusOK, response)
+
+		} else {
+			c.JSON(http.StatusUnauthorized, gin.H{"sucess": false, "error": "Invalid token"})
+		}
+	}
+}
+
 func GetAllTask() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("token")
@@ -179,7 +279,7 @@ func GetAllTask() gin.HandlerFunc {
 
 			c.JSON(http.StatusOK, response)
 		} else {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.JSON(http.StatusUnauthorized, gin.H{"sucess": false, "error": "Invalid token"})
 		}
 
 	}

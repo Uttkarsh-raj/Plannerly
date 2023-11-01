@@ -143,6 +143,7 @@ func GetUrgentTasks() gin.HandlerFunc {
 			user_id := claims["Uid"].(string)
 			ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 			var tasks []models.Task
+			var completed, total int
 
 			cursor, err := taskCollection.Find(ctx, bson.M{"user_id": user_id, "urgent": true})
 			defer cancel()
@@ -157,6 +158,10 @@ func GetUrgentTasks() gin.HandlerFunc {
 					c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 					return
 				}
+				if task.Completed == true {
+					completed++
+				}
+				total++
 				tasks = append(tasks, task)
 			}
 			if err := cursor.Err(); err != nil {
@@ -165,8 +170,10 @@ func GetUrgentTasks() gin.HandlerFunc {
 			}
 
 			response := gin.H{
-				"success": true,
-				"data":    tasks,
+				"success":   true,
+				"data":      tasks,
+				"completed": completed,
+				"total":     total,
 			}
 
 			c.JSON(http.StatusOK, response)
@@ -193,6 +200,7 @@ func GetRegularTasks() gin.HandlerFunc {
 			user_id := claims["Uid"].(string)
 			ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 			var tasks []models.Task
+			var completed, total int
 			cursor, err := taskCollection.Find(ctx, bson.M{"user_id": user_id, "urgent": false})
 			defer cancel()
 			if err != nil {
@@ -206,6 +214,11 @@ func GetRegularTasks() gin.HandlerFunc {
 					c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 					return
 				}
+				println(task.Completed)
+				if task.Completed == true {
+					completed++
+				}
+				total++
 				tasks = append(tasks, task)
 			}
 
@@ -215,8 +228,10 @@ func GetRegularTasks() gin.HandlerFunc {
 			}
 
 			response := gin.H{
-				"success": true,
-				"data":    tasks,
+				"success":   true,
+				"data":      tasks,
+				"completed": completed,
+				"total":     total,
 			}
 
 			c.JSON(http.StatusOK, response)

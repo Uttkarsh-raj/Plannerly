@@ -33,12 +33,49 @@ class _HomeScreenState extends State<HomeScreen> {
       buildWhen: (previous, current) => current
           is! HomeActionState, //any other state other than the home action state
       listener: (context, state) {
+        //registed all the states you want to listen to
         if (state is HomeNavigateToUrgentTasksPage) {
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => const UrgentTasks()));
         } else if (state is HomeNavigateToRegularTasksPage) {
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => const RegularTasks()));
+        } else if (state is HomeTaskCompletedState) {
+          var snackbar = const SnackBar(
+            backgroundColor: Colors.green,
+            content: Text(
+              "Congratulations !! Task completed successfully.",
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.white,
+              ),
+            ),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackbar);
+        } else if (state is HomeTaskDeletedState) {
+          var snackBar = SnackBar(
+            backgroundColor: Colors.red[500],
+            content: const Text(
+              "Task deleted successfully !!",
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColors.white,
+              ),
+            ),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else if (state is HomeUnableTofetchTasks) {
+          var snackBar = SnackBar(
+            backgroundColor: Colors.red[500],
+            content: Text(
+              state.message,
+              style: const TextStyle(
+                fontSize: 16,
+                color: AppColors.white,
+              ),
+            ),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       },
       builder: (context, state) {
@@ -157,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        "30/40 task completed.",
+                                        "${state.totalRegularTasksCompleted + state.totalUrgentTasksCompleted}/${state.totalRegularTasks + state.totalUrgentTasks} task completed.",
                                         style: TextStyle(
                                           color:
                                               AppColors.white.withOpacity(0.4),
@@ -174,7 +211,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                       height: size.height * 0.07,
                                       width: size.height * 0.07,
                                       child: CircularProgressIndicator(
-                                        value: 0.8,
+                                        value: ((state.totalRegularTasksCompleted +
+                                                    state
+                                                        .totalUrgentTasksCompleted) ==
+                                                0)
+                                            ? 0
+                                            : (state.totalRegularTasksCompleted +
+                                                    state
+                                                        .totalUrgentTasksCompleted) /
+                                                (state.totalRegularTasks +
+                                                    state.totalUrgentTasks),
                                         strokeWidth: 7,
                                         valueColor:
                                             const AlwaysStoppedAnimation(
@@ -182,7 +228,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         backgroundColor:
                                             AppColors.white.withOpacity(0.2),
                                         color: AppColors.white,
-                                        semanticsValue: "80%",
                                       ),
                                     ),
                                     SizedBox(
@@ -190,7 +235,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                       width: size.height * 0.07,
                                       child: Center(
                                         child: Text(
-                                          "80%",
+                                          ((state.totalRegularTasksCompleted +
+                                                      state
+                                                          .totalUrgentTasksCompleted) ==
+                                                  0)
+                                              ? "0%"
+                                              : "${((state.totalRegularTasksCompleted + state.totalUrgentTasksCompleted) / (state.totalRegularTasks + state.totalUrgentTasks) * 100).toStringAsFixed(1)}%",
                                           style: TextStyle(
                                             color: AppColors.white
                                                 .withOpacity(0.8),
@@ -244,7 +294,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                               height: size.height * 0.1,
                                               width: size.height * 0.1,
                                               child: CircularProgressIndicator(
-                                                value: 0.8,
+                                                value: (state
+                                                            .totalUrgentTasksCompleted ==
+                                                        0)
+                                                    ? 0
+                                                    : (state.totalUrgentTasksCompleted /
+                                                        state.totalUrgentTasks),
                                                 strokeWidth: 7,
                                                 valueColor:
                                                     AlwaysStoppedAnimation(
@@ -252,7 +307,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 backgroundColor: AppColors.white
                                                     .withOpacity(0.2),
                                                 color: AppColors.white,
-                                                semanticsValue: "80%",
                                               ),
                                             ),
                                             SizedBox(
@@ -260,7 +314,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                               width: size.height * 0.1,
                                               child: Center(
                                                 child: Text(
-                                                  "80%",
+                                                  (state.totalUrgentTasksCompleted ==
+                                                          0)
+                                                      ? "0%"
+                                                      : "${((state.totalUrgentTasksCompleted / state.totalUrgentTasks) * 100).toStringAsFixed(1)}%",
                                                   style: TextStyle(
                                                     color: AppColors.white
                                                         .withOpacity(0.8),
@@ -276,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       const SizedBox(height: 16),
                                       Center(
                                         child: Text(
-                                          "30/40",
+                                          "${state.totalUrgentTasksCompleted}/${state.totalUrgentTasks}",
                                           style: TextStyle(
                                             color: AppColors.white
                                                 .withOpacity(0.4),
@@ -324,7 +381,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                               height: size.height * 0.1,
                                               width: size.height * 0.1,
                                               child: CircularProgressIndicator(
-                                                value: 0.5,
+                                                value: (state
+                                                            .totalRegularTasksCompleted ==
+                                                        0)
+                                                    ? 0
+                                                    : (state.totalRegularTasksCompleted /
+                                                        state
+                                                            .totalRegularTasks),
                                                 strokeWidth: 7,
                                                 valueColor:
                                                     AlwaysStoppedAnimation(
@@ -332,7 +395,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 backgroundColor: AppColors.white
                                                     .withOpacity(0.2),
                                                 color: AppColors.white,
-                                                semanticsValue: "80%",
                                               ),
                                             ),
                                             SizedBox(
@@ -340,7 +402,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                               width: size.height * 0.1,
                                               child: Center(
                                                 child: Text(
-                                                  "50%",
+                                                  (state.totalRegularTasksCompleted ==
+                                                          0)
+                                                      ? "0%"
+                                                      : "${((state.totalRegularTasksCompleted / state.totalRegularTasks) * 100).toStringAsFixed(1)}%",
                                                   style: TextStyle(
                                                     color: AppColors.white
                                                         .withOpacity(0.8),
@@ -356,7 +421,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       const SizedBox(height: 16),
                                       Center(
                                         child: Text(
-                                          "5/10",
+                                          "${state.totalRegularTasksCompleted}/${state.totalRegularTasks}",
                                           style: TextStyle(
                                             color: AppColors.white
                                                 .withOpacity(0.4),

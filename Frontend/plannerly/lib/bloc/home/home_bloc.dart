@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:plannerly/models/task_model.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:plannerly/utils/server/server_constants.dart';
 part 'home_event.dart';
 part 'home_state.dart';
 
@@ -20,57 +23,83 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   FutureOr<void> homeInitialEvent(
       HomeInitialEvent event, Emitter<HomeState> emit) async {
     emit(HomeLoadingState());
-    await Future.delayed(Duration(seconds: 3));
-    List<TaskModel> regualarTasks = [
-      TaskModel(
-        taskId: "000000000000000000000000",
-        userId: "653a2f71e2330ac369e93c9b",
-        title: "Task 3",
-        description: "This is the First task of regular type.",
-        time: "10:00:00",
-        date: "24/10/2023",
-        completed: false,
-        urgent: false,
-      ),
-      TaskModel(
-        taskId: "000000000000000000000001",
-        userId: "653a2f71e2330ac369e93c9b",
-        title: "Task 4",
-        description: "This is the Second task of regular type.",
-        time: "10:00:00",
-        date: "25/10/2023",
-        completed: false,
-        urgent: false,
-      )
-    ];
-    List<TaskModel> urgentTasks = [
-      TaskModel(
-        taskId: "000000000000000000000000",
-        userId: "653a2f71e2330ac369e93c9b",
-        title: "Task 1",
-        description:
-            "This is the First taska.sfshlfhslfhlshfljsf.sdkjfjhahfksahihas",
-        time: "10:00:00",
-        date: "24/10/2023",
-        completed: false,
-        urgent: true,
-      ),
-      TaskModel(
-        taskId: "000000000000000000000001",
-        userId: "653a2f71e2330ac369e93c9b",
-        title: "Task 2",
-        description: "This is the Second task",
-        time: "10:00:00",
-        date: "25/10/2023",
-        completed: false,
-        urgent: true,
-      )
-    ];
+    List<TaskModel> regualarTasks = [];
+    List<TaskModel> urgentTasks = [];
+    int totalUrgentTasks = 0,
+        totalRegularTasks = 0,
+        urgentTasksCompleted = 0,
+        regularTasksCompleted = 0;
+    try {
+      var uri = Uri.parse("$baseUrl/tasks/urgent");
+      var res = await http.get(
+        uri,
+        headers: {"token": token},
+      );
+      var response = jsonDecode(res.body);
+      if (response["success"]) {
+        List<dynamic> data = response["data"];
+        totalUrgentTasks = response["total"];
+        urgentTasksCompleted = response["completed"];
+        urgentTasks = data.map((task) {
+          return TaskModel(
+            taskId: task["ID"],
+            userId: task["user_id"],
+            title: task["title"],
+            description: task["desc"],
+            time: task["time"],
+            date: task["date"],
+            completed: task["completed"],
+            urgent: task["urgent"],
+          );
+        }).toList();
+      } else {
+        emit(HomeUnableTofetchTasks(message: response["error"]));
+      }
+    } catch (e) {
+      emit(HomeUnableTofetchTasks(message: "Unable to get the data."));
+      log(e.toString());
+    }
+
+    try {
+      var res = await http.get(
+        Uri.parse("$baseUrl/tasks/regular"),
+        headers: {"token": token},
+      );
+      // print("res: ${res.body}");
+      var response = jsonDecode(res.body);
+      // print("response: $response");
+      if (response["success"]) {
+        List<dynamic> data = response["data"];
+        totalRegularTasks = response["total"];
+        regularTasksCompleted = response["completed"];
+        regualarTasks = data.map((task) {
+          return TaskModel(
+            taskId: task["ID"],
+            userId: task["user_id"],
+            title: task["title"],
+            description: task["desc"],
+            time: task["time"],
+            date: task["date"],
+            completed: task["completed"],
+            urgent: task["urgent"],
+          );
+        }).toList();
+      } else {
+        emit(HomeUnableTofetchTasks(message: response["error"]));
+      }
+    } catch (e) {
+      emit(HomeUnableTofetchTasks(message: "Unable to get the data."));
+      log(e.toString());
+    }
 
     emit(
       HomeLoadedSuccessState(
         regualarTasks,
         urgentTasks,
+        totalUrgentTasks,
+        totalRegularTasks,
+        urgentTasksCompleted,
+        regularTasksCompleted,
       ),
     );
   }
@@ -90,10 +119,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   FutureOr<void> homeTasksCompletedButtonClicked(
       HomeTasksCompletedButtonClicked event, Emitter<HomeState> emit) {
     print("Task completed button clicked");
+    emit(HomeTaskCompletedState());
   }
 
   FutureOr<void> homeTasksDeleteButtonClicked(
       HomeTasksDeleteButtonClicked event, Emitter<HomeState> emit) {
     print("Task deleted button clicked");
+    emit(HomeTaskDeletedState());
   }
 }

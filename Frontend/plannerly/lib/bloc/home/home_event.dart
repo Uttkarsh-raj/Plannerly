@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'home_bloc.dart';
 
 @immutable
@@ -10,6 +11,16 @@ class HomeUrgentTasksViewAllClickedEvent extends HomeEvent {}
 
 class HomeRegularTasksViewAllClickedEvent extends HomeEvent {}
 
-class HomeTasksDeleteButtonClicked extends HomeEvent {}
+class HomeTasksDeleteButtonClicked extends HomeEvent {
+  final TaskModel taskDeleted;
+  HomeTasksDeleteButtonClicked({
+    required this.taskDeleted,
+  });
+}
 
-class HomeTasksCompletedButtonClicked extends HomeEvent {}
+class HomeTasksCompletedButtonClicked extends HomeEvent {
+  final TaskModel taskCompleted;
+  HomeTasksCompletedButtonClicked({
+    required this.taskCompleted,
+  });
+}

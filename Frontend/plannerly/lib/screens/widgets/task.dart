@@ -29,13 +29,25 @@ class _TaskState extends State<Task> {
             children: [
               IconButton(
                 onPressed: () {
-                  widget.bloc.add(HomeTasksCompletedButtonClicked());
+                  if (!widget.task.completed) {
+                    widget.bloc.add(
+                      HomeTasksCompletedButtonClicked(
+                        taskCompleted: widget.task,
+                      ),
+                    );
+                  }
                 },
-                icon: Icon(
-                  Icons.done_outline,
-                  color: AppColors.white.withOpacity(0.3), //Colors.green
-                  size: 30,
-                ),
+                icon: (!widget.task.completed)
+                    ? Icon(
+                        Icons.done_outline,
+                        color: AppColors.white.withOpacity(0.3), //Colors.green
+                        size: 30,
+                      )
+                    : const Icon(
+                        Icons.done_rounded,
+                        color: Colors.green, //Colors.green
+                        size: 40,
+                      ),
               ),
               SizedBox(width: size.width * 0.06),
               Expanded(
@@ -75,7 +87,11 @@ class _TaskState extends State<Task> {
               ),
               IconButton(
                 onPressed: () {
-                  widget.bloc.add(HomeTasksDeleteButtonClicked());
+                  widget.bloc.add(
+                    HomeTasksDeleteButtonClicked(
+                      taskDeleted: widget.task,
+                    ),
+                  );
                 },
                 icon: Icon(
                   Icons.delete_outline,

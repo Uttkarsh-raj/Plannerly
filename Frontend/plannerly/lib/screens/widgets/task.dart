@@ -92,6 +92,7 @@ class _TaskState extends State<Task> {
                       taskDeleted: widget.task,
                     ),
                   );
+                  widget.bloc.add(HomeInitialEvent());
                 },
                 icon: Icon(
                   Icons.delete_outline,

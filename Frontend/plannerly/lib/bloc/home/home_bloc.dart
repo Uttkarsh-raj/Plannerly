@@ -123,8 +123,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   FutureOr<void> homeTasksDeleteButtonClicked(
-      HomeTasksDeleteButtonClicked event, Emitter<HomeState> emit) {
-    print("Task deleted button clicked");
-    emit(HomeTaskDeletedState());
+      HomeTasksDeleteButtonClicked event, Emitter<HomeState> emit) async {
+    emit(HomeLoadingState());
+    var uri = Uri.parse("$baseUrl/delete/${event.taskDeleted.taskId}");
+    try {
+      var res = await http.delete(
+        uri,
+        headers: {"token": token},
+      );
+      var response = jsonDecode(res.body);
+      if (response["success"]) {
+        emit(HomeTaskDeletedState());
+      } else {
+        emit(HomeUnableTofetchTasks(message: response["error"]));
+      }
+    } catch (e) {
+      emit(HomeUnableTofetchTasks(message: e.toString()));
+    }
   }
 }

@@ -11,6 +11,8 @@ final class HomeInitial extends HomeState {}
 
 class HomeLoadingState extends HomeState {}
 
+class HomeRefreshState extends HomeState {}
+
 class HomeLoadedSuccessState extends HomeState {
   final List<TaskModel> regularTasks;
   final List<TaskModel> urgentTasks;

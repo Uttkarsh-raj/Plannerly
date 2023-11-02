@@ -117,9 +117,27 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   FutureOr<void> homeTasksCompletedButtonClicked(
-      HomeTasksCompletedButtonClicked event, Emitter<HomeState> emit) {
+      HomeTasksCompletedButtonClicked event, Emitter<HomeState> emit) async {
     print("Task completed button clicked");
-    emit(HomeTaskCompletedState());
+    var uri = Uri.parse("$baseUrl/update/${event.taskCompleted.taskId}");
+    print(uri);
+    try {
+      var res = await http.patch(
+        uri,
+        headers: {"token": token},
+        body: jsonEncode({"completed": true}),
+      );
+      print(res);
+      var response = jsonDecode(res.body);
+      print(response);
+      if (response['success']) {
+        emit(HomeTaskCompletedState());
+      } else {
+        emit(HomeUnableTofetchTasks(message: response["error"]));
+      }
+    } catch (e) {
+      emit(HomeUnableTofetchTasks(message: e.toString()));
+    }
   }
 
   FutureOr<void> homeTasksDeleteButtonClicked(

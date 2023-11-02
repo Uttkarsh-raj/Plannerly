@@ -35,6 +35,7 @@ class _TaskState extends State<Task> {
                         taskCompleted: widget.task,
                       ),
                     );
+                    widget.bloc.add(HomeInitialEvent());
                   }
                 },
                 icon: (!widget.task.completed)

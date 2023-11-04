@@ -87,7 +87,7 @@ class _TaskState extends State<Task> {
                 ),
               ),
               IconButton(
-                onPressed: () {
+                onPressed: () async {
                   widget.bloc.add(
                     HomeTasksDeleteButtonClicked(
                       taskDeleted: widget.task,

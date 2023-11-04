@@ -89,6 +89,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             urgent: task["urgent"],
           );
         }).toList();
+        emit(
+          HomeLoadedSuccessState(
+            regualarTasks,
+            urgentTasks,
+            totalUrgentTasks,
+            totalRegularTasks,
+            urgentTasksCompleted,
+            regularTasksCompleted,
+          ),
+        );
       } else {
         emit(HomeUnableTofetchTasks(message: response["error"]));
       }
@@ -96,17 +106,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(HomeUnableTofetchTasks(message: "Unable to get the data."));
       log(e.toString());
     }
-
-    emit(
-      HomeLoadedSuccessState(
-        regualarTasks,
-        urgentTasks,
-        totalUrgentTasks,
-        totalRegularTasks,
-        urgentTasksCompleted,
-        regularTasksCompleted,
-      ),
-    );
   }
 
   FutureOr<void> homeUrgentTasksViewAllClickedEvent(

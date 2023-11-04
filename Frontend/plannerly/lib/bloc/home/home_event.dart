@@ -24,3 +24,22 @@ class HomeTasksCompletedButtonClicked extends HomeEvent {
     required this.taskCompleted,
   });
 }
+
+class HomeAddNewTaskButtonClickedEvent extends HomeEvent {}
+
+class HomeAddNewTaskCloseButtonClickedEvent extends HomeEvent {}
+
+class HomeAddNewTaskAddButtonClickedEvent extends HomeEvent {
+  final String title;
+  final String desc;
+  final String date;
+  final String time;
+  final String urgent;
+  HomeAddNewTaskAddButtonClickedEvent({
+    required this.title,
+    required this.desc,
+    required this.date,
+    required this.time,
+    required this.urgent,
+  });
+}

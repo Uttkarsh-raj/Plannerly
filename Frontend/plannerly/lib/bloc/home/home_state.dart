@@ -48,3 +48,9 @@ class HomeUnableTofetchTasks extends HomeActionState {
     required this.message,
   });
 }
+
+class HomeNewTaskAddedState extends HomeActionState {}
+
+class HomePopState extends HomeActionState {}
+
+class HomeTaskAddedSuccessState extends HomeActionState {}

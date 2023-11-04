@@ -18,6 +18,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         homeRegularTasksViewAllClickedEvent);
     on<HomeTasksCompletedButtonClicked>(homeTasksCompletedButtonClicked);
     on<HomeTasksDeleteButtonClicked>(homeTasksDeleteButtonClicked);
+    on<HomeAddNewTaskButtonClickedEvent>(homeAddNewTaskButtonClickedEvent);
+    on<HomeAddNewTaskCloseButtonClickedEvent>(
+        homeAddNewTaskCloseButtonClickedEvent);
+    on<HomeAddNewTaskAddButtonClickedEvent>(
+        homeAddNewTaskAddButtonClickedEvent);
   }
 
   FutureOr<void> homeInitialEvent(
@@ -157,6 +162,49 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
     } catch (e) {
       emit(HomeUnableTofetchTasks(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> homeAddNewTaskButtonClickedEvent(
+      HomeAddNewTaskButtonClickedEvent event, Emitter<HomeState> emit) {
+    print("Add a new task");
+    emit(HomeNewTaskAddedState());
+    // emit(HomeInitial());
+  }
+
+  FutureOr<void> homeAddNewTaskCloseButtonClickedEvent(
+      HomeAddNewTaskCloseButtonClickedEvent event, Emitter<HomeState> emit) {
+    emit(HomePopState());
+  }
+
+  FutureOr<void> homeAddNewTaskAddButtonClickedEvent(
+      HomeAddNewTaskAddButtonClickedEvent event,
+      Emitter<HomeState> emit) async {
+    print("object");
+    emit(HomeLoadingState());
+    var url = Uri.parse("$baseUrl/addTask");
+    bool val = (event.urgent.toLowerCase() == "true") ? true : false;
+    var res = await http.post(
+      url,
+      headers: {"token": token},
+      body: jsonEncode(
+        {
+          "user_id": userId,
+          "title": event.title,
+          "desc": event.desc,
+          "time": event.time,
+          "date": event.date,
+          "completed": false,
+          "urgent": val,
+        },
+      ),
+    );
+    var response = jsonDecode(res.body);
+    print(response);
+    if (response["success"] == true) {
+      emit(HomeTaskAddedSuccessState());
+    } else {
+      emit(HomeUnableTofetchTasks(message: response["error"]));
     }
   }
 }

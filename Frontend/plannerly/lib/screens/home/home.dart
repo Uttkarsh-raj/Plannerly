@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:plannerly/screens/regular_tasks/regular_tasks_page.dart';
 import 'package:plannerly/screens/urgent_tasks/urgent_tasks_page.dart';
+import 'package:plannerly/screens/widgets/form_field.dart';
 import 'package:plannerly/screens/widgets/task.dart';
 import 'package:plannerly/utils/colors/colors.dart';
 
@@ -16,10 +18,25 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final HomeBloc homeBloc = HomeBloc();
+  TextEditingController titleContr = TextEditingController();
+  TextEditingController descContr = TextEditingController();
+  TextEditingController timeContr = TextEditingController();
+  TextEditingController dateContr = TextEditingController();
+  TextEditingController urgContr = TextEditingController();
+  bool? urgent = false;
   @override
   void initState() {
     homeBloc.add(HomeInitialEvent());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    titleContr.dispose();
+    descContr.dispose();
+    timeContr.dispose();
+    dateContr.dispose();
+    super.dispose();
   }
 
   @override
@@ -76,6 +93,134 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+        // else if (state is HomeNewTaskAddedState) {
+        //   var snackBar = SnackBar(
+        //     backgroundColor: Colors.red[500],
+        //     content: Text(
+        //       "state.message",
+        //       style: const TextStyle(
+        //         fontSize: 16,
+        //         color: AppColors.white,
+        //       ),
+        //     ),
+        //   );
+        //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        // }
+        else if (state is HomeNewTaskAddedState) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                scrollable: true,
+                title: const Center(
+                  child: Text(
+                    'Add new Task',
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                content: SizedBox(
+                  height: size.height * 0.65,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TaskFormField(
+                        title: "Title",
+                        hint: "Title",
+                        controller: titleContr,
+                      ),
+                      const SizedBox(height: 14),
+                      TaskFormField(
+                        title: "Description",
+                        hint: "Description",
+                        controller: descContr,
+                        height: size.height * 0.16,
+                        maxLines: 4,
+                      ),
+                      const SizedBox(height: 14),
+                      TaskFormField(
+                        title: "Date",
+                        hint: "DD/MM/YYYY",
+                        controller: dateContr,
+                      ),
+                      const SizedBox(height: 14),
+                      TaskFormField(
+                        title: "Time",
+                        hint: "HH:MM:SS",
+                        controller: timeContr,
+                      ),
+                      const SizedBox(height: 14),
+                      TaskFormField(
+                        title: "Urgent",
+                        hint: "True/False",
+                        controller: urgContr,
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      homeBloc.add(HomeAddNewTaskCloseButtonClickedEvent());
+                    },
+                    child: const Text(
+                      "Close",
+                      style: TextStyle(
+                        color: AppColors.buttonBlue,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      if (titleContr.text.isNotEmpty &&
+                          descContr.text.isNotEmpty &&
+                          dateContr.text.isNotEmpty &&
+                          timeContr.text.isNotEmpty &&
+                          urgContr.text.isNotEmpty) {
+                        homeBloc.add(
+                          HomeAddNewTaskAddButtonClickedEvent(
+                            title: titleContr.text.trim().toString(),
+                            desc: descContr.text.trim().toString(),
+                            date: dateContr.text.trim().toString(),
+                            time: timeContr.text.trim().toString(),
+                            urgent: urgContr.text.trim().toString(),
+                          ),
+                        );
+                      } else {
+                        Fluttertoast.showToast(
+                          msg: "Please provide information for all fields.",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: AppColors.grey,
+                          textColor: AppColors.backgroundDark,
+                          fontSize: 16.0,
+                        );
+                      }
+                    },
+                    child: const Text(
+                      "Add",
+                      style: TextStyle(
+                        color: AppColors.buttonBlue,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        } else if (state is HomePopState) {
+          Navigator.of(context).pop();
+        } else if (state is HomeTaskAddedSuccessState) {
+          Navigator.of(context).pop();
+          homeBloc.add(HomeInitialEvent());
         }
       },
       builder: (context, state) {
@@ -543,20 +688,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: size.width,
                       bottom: 8,
                       child: Center(
-                        child: Container(
-                          width: size.width * 0.7,
-                          height: size.height * 0.07,
-                          decoration: BoxDecoration(
-                            color: AppColors.buttonBlue,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              "Add new task +",
-                              style: TextStyle(
-                                color: AppColors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w400,
+                        child: GestureDetector(
+                          onTap: () {
+                            homeBloc.add(HomeAddNewTaskButtonClickedEvent());
+                          },
+                          child: Container(
+                            width: size.width * 0.7,
+                            height: size.height * 0.07,
+                            decoration: BoxDecoration(
+                              color: AppColors.buttonBlue,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                "Add new task +",
+                                style: TextStyle(
+                                  color: AppColors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
                             ),
                           ),

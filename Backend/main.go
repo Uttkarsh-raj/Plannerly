@@ -19,3 +19,7 @@ func main() {
 	routes.TaskRoutes(router) //tasks routes
 	log.Fatal(router.Run(":" + port))
 }
+
+//to run the docker file use the following line of code
+// docker run -p 8081:8080 -it plannerly-backend
+// map the 8080 port of the docker file to 8081 in local (since it was not free) and then run "-it dockerFileName"

@@ -27,7 +27,7 @@ class _TaskFormFieldState extends State<TaskFormField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "${widget.title} : ",
+          "${widget.title} ",
           style: const TextStyle(
             color: AppColors.white,
             fontSize: 20,

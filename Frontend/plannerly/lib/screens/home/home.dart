@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:plannerly/screens/home/home_loading.dart';
 import 'package:plannerly/screens/regular_tasks/regular_tasks_page.dart';
 import 'package:plannerly/screens/urgent_tasks/urgent_tasks_page.dart';
 import 'package:plannerly/screens/widgets/form_field.dart';
@@ -115,13 +116,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TaskFormField(
-                        title: "Title",
+                        title: "Title :",
                         hint: "Title",
                         controller: titleContr,
                       ),
                       const SizedBox(height: 14),
                       TaskFormField(
-                        title: "Description",
+                        title: "Description :",
                         hint: "Description",
                         controller: descContr,
                         height: size.height * 0.16,
@@ -129,19 +130,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 14),
                       TaskFormField(
-                        title: "Date",
+                        title: "Date :",
                         hint: "DD/MM/YYYY",
                         controller: dateContr,
                       ),
                       const SizedBox(height: 14),
                       TaskFormField(
-                        title: "Time",
+                        title: "Time :",
                         hint: "HH:MM:SS",
                         controller: timeContr,
                       ),
                       const SizedBox(height: 14),
                       TaskFormField(
-                        title: "Urgent",
+                        title: "Urgent :",
                         hint: "True/False",
                         controller: urgContr,
                       ),
@@ -212,10 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, state) {
         switch (state.runtimeType) {
           case HomeLoadingState:
-            return const Scaffold(
-              backgroundColor: AppColors.backgroundDark,
-              body: Center(child: CircularProgressIndicator()),
-            );
+            return const HomeLoading();
           case HomeLoadedSuccessState:
             final successState = state as HomeLoadedSuccessState;
             return Scaffold(

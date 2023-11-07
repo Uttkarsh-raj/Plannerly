@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plannerly/bloc/home/home_bloc.dart';
+import 'package:plannerly/screens/home/home_loading.dart';
 import 'package:plannerly/screens/widgets/task.dart';
 import 'package:plannerly/utils/colors/colors.dart';
 
@@ -34,10 +35,7 @@ class _UrgentTasksState extends State<UrgentTasks> {
       builder: (context, state) {
         switch (state.runtimeType) {
           case HomeLoadingState:
-            return const Scaffold(
-              backgroundColor: AppColors.backgroundDark,
-              body: Center(child: CircularProgressIndicator()),
-            );
+            return const HomeLoading();
           case HomeLoadedSuccessState:
             final successState = state as HomeLoadedSuccessState;
             return Scaffold(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plannerly/screens/home/home.dart';
+import 'package:plannerly/screens/signup/signup.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.dark,
       debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+      home: const SignUpPage(),
     );
   }
 }

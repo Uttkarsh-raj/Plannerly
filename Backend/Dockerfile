@@ -14,9 +14,6 @@ COPY . /app/
 
 EXPOSE 8000
 
-# List the contents of the /app directory.
-RUN ls -l /app
-
 # Build the Go application and name the output binary "main".
 RUN go build -o main.exe
 

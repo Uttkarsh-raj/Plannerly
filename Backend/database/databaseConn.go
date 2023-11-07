@@ -13,7 +13,7 @@ import (
 )
 
 func DBInstance() *mongo.Client {
-	err := godotenv.Load("C:/Users/Uttkarsh/dev/projects/flutter/To-Do App/Backend/.env")
+	err := godotenv.Load("./.env")
 	if err != nil {
 		log.Fatal("Error loading env file")
 	}

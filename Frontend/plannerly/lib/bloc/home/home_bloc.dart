@@ -7,6 +7,7 @@ import 'package:meta/meta.dart';
 import 'package:plannerly/models/task_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:plannerly/utils/server/server_constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 part 'home_event.dart';
 part 'home_state.dart';
 
@@ -34,6 +35,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         totalRegularTasks = 0,
         urgentTasksCompleted = 0,
         regularTasksCompleted = 0;
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    var token = sp.getString('token')!;
     try {
       var uri = Uri.parse("$baseUrl/tasks/urgent");
       var res = await http.get(
@@ -116,24 +119,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   FutureOr<void> homeRegularTasksViewAllClickedEvent(
       HomeRegularTasksViewAllClickedEvent event, Emitter<HomeState> emit) {
-    print('View Regular Page');
     emit(HomeNavigateToRegularTasksPage());
   }
 
   FutureOr<void> homeTasksCompletedButtonClicked(
       HomeTasksCompletedButtonClicked event, Emitter<HomeState> emit) async {
-    print("Task completed button clicked");
     var uri = Uri.parse("$baseUrl/update/${event.taskCompleted.taskId}");
-    print(uri);
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    var token = sp.getString('token')!;
     try {
       var res = await http.patch(
         uri,
         headers: {"token": token},
         body: jsonEncode({"completed": true}),
       );
-      print(res);
       var response = jsonDecode(res.body);
-      print(response);
       if (response['success']) {
         emit(HomeTaskCompletedState());
       } else {
@@ -147,6 +147,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   FutureOr<void> homeTasksDeleteButtonClicked(
       HomeTasksDeleteButtonClicked event, Emitter<HomeState> emit) async {
     emit(HomeLoadingState());
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    var token = sp.getString('token')!;
     var uri = Uri.parse("$baseUrl/delete/${event.taskDeleted.taskId}");
     try {
       var res = await http.delete(
@@ -181,6 +183,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       Emitter<HomeState> emit) async {
     print("object");
     emit(HomeLoadingState());
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    var token = sp.getString('token')!;
     var url = Uri.parse("$baseUrl/addTask");
     bool val = (event.urgent.toLowerCase() == "true") ? true : false;
     var res = await http.post(

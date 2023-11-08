@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'signup_bloc.dart';
 
 @immutable
@@ -18,9 +17,11 @@ class SignupButtonClicked extends SignupActionState {}
 
 class SignupPageLoginButtonClicked extends SignupActionState {}
 
-class SignupPageError extends SignupActionState {
-  String errorMessage;
-  SignupPageError({
+class SignupShowSnackbar extends SignupActionState {
+  final String errorMessage;
+  SignupShowSnackbar({
     required this.errorMessage,
   });
 }
+
+class SignUpSuccessState extends SignupActionState {}

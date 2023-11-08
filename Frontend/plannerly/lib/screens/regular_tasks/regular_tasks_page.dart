@@ -206,7 +206,7 @@ class _RegularTasksState extends State<RegularTasks> {
               ),
             );
           default:
-            return SizedBox();
+            return const SizedBox();
         }
       },
     );

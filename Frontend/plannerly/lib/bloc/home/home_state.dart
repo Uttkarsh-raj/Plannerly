@@ -37,6 +37,8 @@ class HomeNavigateToUrgentTasksPage extends HomeActionState {}
 
 class HomeNavigateToRegularTasksPage extends HomeActionState {}
 
+class HomeDrawerButtonClickedState extends HomeActionState {}
+
 //showing a snackbar is an action and thus we need an action state
 class HomeTaskDeletedState extends HomeActionState {}
 

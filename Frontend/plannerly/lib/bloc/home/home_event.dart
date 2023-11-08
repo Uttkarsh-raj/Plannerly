@@ -43,3 +43,5 @@ class HomeAddNewTaskAddButtonClickedEvent extends HomeEvent {
     required this.urgent,
   });
 }
+
+class HomeDrawerButtonClickedEvent extends HomeEvent {}

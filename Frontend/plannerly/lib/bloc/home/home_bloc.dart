@@ -24,6 +24,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         homeAddNewTaskCloseButtonClickedEvent);
     on<HomeAddNewTaskAddButtonClickedEvent>(
         homeAddNewTaskAddButtonClickedEvent);
+    on<HomeDrawerButtonClickedEvent>(homeDrawerButtonClickedEvent);
   }
 
   FutureOr<void> homeInitialEvent(
@@ -209,5 +210,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } else {
       emit(HomeUnableTofetchTasks(message: response["error"]));
     }
+  }
+
+  FutureOr<void> homeDrawerButtonClickedEvent(
+      HomeDrawerButtonClickedEvent event, Emitter<HomeState> emit) {
+    emit(HomeDrawerButtonClickedState());
   }
 }

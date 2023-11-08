@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:plannerly/screens/home/home_loading.dart';
 import 'package:plannerly/screens/regular_tasks/regular_tasks_page.dart';
 import 'package:plannerly/screens/urgent_tasks/urgent_tasks_page.dart';
+import 'package:plannerly/screens/widgets/custom_drawer.dart';
 import 'package:plannerly/screens/widgets/form_field.dart';
 import 'package:plannerly/screens/widgets/task.dart';
 import 'package:plannerly/utils/colors/colors.dart';
@@ -18,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final HomeBloc homeBloc = HomeBloc();
   TextEditingController titleContr = TextEditingController();
   TextEditingController descContr = TextEditingController();
@@ -208,6 +210,8 @@ class _HomeScreenState extends State<HomeScreen> {
         } else if (state is HomeTaskAddedSuccessState) {
           Navigator.of(context).pop();
           homeBloc.add(HomeInitialEvent());
+        } else if (state is HomeDrawerButtonClickedState) {
+          _scaffoldKey.currentState?.openDrawer();
         }
       },
       builder: (context, state) {
@@ -217,6 +221,8 @@ class _HomeScreenState extends State<HomeScreen> {
           case HomeLoadedSuccessState:
             final successState = state as HomeLoadedSuccessState;
             return Scaffold(
+              key: _scaffoldKey,
+              drawer: const CustomDrawer(),
               backgroundColor: AppColors.backgroundDark,
               body: Padding(
                 padding: const EdgeInsets.all(14.0),
@@ -232,15 +238,21 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(height: size.height * 0.03),
-                            const Row(
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Icon(
-                                  Icons.menu_outlined,
-                                  size: 28,
-                                  color: AppColors.white,
+                                GestureDetector(
+                                  onTap: () {
+                                    homeBloc
+                                        .add(HomeDrawerButtonClickedEvent());
+                                  },
+                                  child: const Icon(
+                                    Icons.menu_outlined,
+                                    size: 28,
+                                    color: AppColors.white,
+                                  ),
                                 ),
-                                Icon(
+                                const Icon(
                                   Icons.notifications_outlined,
                                   size: 28,
                                   color: AppColors.white,

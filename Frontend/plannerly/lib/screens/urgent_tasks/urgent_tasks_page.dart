@@ -206,7 +206,7 @@ class _UrgentTasksState extends State<UrgentTasks> {
               ),
             );
           default:
-            return SizedBox();
+            return const SizedBox();
         }
       },
     );

@@ -326,3 +326,72 @@ func DeleteTask() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"success": true, "data": task})
 	}
 }
+
+func SearchTask() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenString := c.GetHeader("token")
+		if tokenString == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "No token Provided"})
+			return
+		}
+		token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) { return []byte(SECRET_KEY), nil })
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"success": false, "error": "Invalid Token"})
+			return
+		}
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			log.Print("claims\n")
+			log.Print(claims)
+			user_id := claims["Uid"].(string)
+			var reqBody map[string]interface{}
+			if err := c.ShouldBindJSON(&reqBody); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+			searchString, ok := reqBody["search"].(string)
+			if !ok {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing 'search' in the request body"})
+				return
+			}
+			query := bson.M{
+				"user_id": user_id,
+				"$or": []bson.M{
+					{"title": bson.M{"$regex": primitive.Regex{Pattern: searchString, Options: "i"}}},
+					{"description": bson.M{"$regex": primitive.Regex{Pattern: searchString, Options: "i"}}},
+					// bson.M{"title": bson.M{"$regex": primitive.Regex{Pattern: searchString, Options: "i"}}},
+					// bson.M{"description": bson.M{"$regex": primitive.Regex{Pattern: searchString, Options: "i"}}},
+				},
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+			var tasks []models.Task
+
+			cursor, err := taskCollection.Find(ctx, query)
+			defer cancel()
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+
+			for cursor.Next(ctx) {
+				var task models.Task
+				if err := cursor.Decode(&task); err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+					return
+				}
+				tasks = append(tasks, task)
+			}
+			if err := cursor.Err(); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
+				return
+			}
+			response := gin.H{
+				"success": true,
+				"data":    tasks,
+			}
+
+			c.JSON(http.StatusOK, response)
+		} else {
+			c.JSON(http.StatusUnauthorized, gin.H{"sucess": false, "error": "Invalid token"})
+		}
+	}
+}

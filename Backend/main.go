@@ -20,6 +20,8 @@ func main() {
 	log.Fatal(router.Run(":" + port))
 }
 
+//to create a docker file/container
+//docker build -t <name of the container>
 //to run the docker file use the following line of code
 // docker run -p 8000:8000 -it plannerly-backend
 // map the 8080 port of the docker file to 8081 in local (since it was not free) and then run "-it dockerFileName"

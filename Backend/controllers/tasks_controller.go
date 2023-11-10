@@ -340,8 +340,6 @@ func SearchTask() gin.HandlerFunc {
 			return
 		}
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			log.Print("claims\n")
-			log.Print(claims)
 			user_id := claims["Uid"].(string)
 			var reqBody map[string]interface{}
 			if err := c.ShouldBindJSON(&reqBody); err != nil {
@@ -363,7 +361,8 @@ func SearchTask() gin.HandlerFunc {
 				},
 			}
 			ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
-			var tasks []models.Task
+			var urgentTasks []models.Task
+			var regularTasks []models.Task
 
 			cursor, err := taskCollection.Find(ctx, query)
 			defer cancel()
@@ -378,15 +377,28 @@ func SearchTask() gin.HandlerFunc {
 					c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 					return
 				}
-				tasks = append(tasks, task)
+				if task.Urgent == true {
+					urgentTasks = append(urgentTasks, task)
+				} else {
+					regularTasks = append(regularTasks, task)
+				}
 			}
 			if err := cursor.Err(); err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 				return
 			}
+			if len(regularTasks) == 0 {
+				regularTasks = []models.Task{}
+			}
+			if len(urgentTasks) == 0 {
+				urgentTasks = []models.Task{}
+			}
 			response := gin.H{
 				"success": true,
-				"data":    tasks,
+				"data": gin.H{
+					"regularTasks": regularTasks,
+					"urgentTasks":  urgentTasks,
+				},
 			}
 
 			c.JSON(http.StatusOK, response)

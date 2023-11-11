@@ -168,7 +168,9 @@ func GetUrgentTasks() gin.HandlerFunc {
 				c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 				return
 			}
-
+			if len(tasks) == 0 {
+				tasks = []models.Task{}
+			}
 			response := gin.H{
 				"success":   true,
 				"data":      tasks,
@@ -225,6 +227,9 @@ func GetRegularTasks() gin.HandlerFunc {
 			if err := cursor.Err(); err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 				return
+			}
+			if len(tasks) == 0 {
+				tasks = []models.Task{}
 			}
 
 			response := gin.H{
@@ -285,6 +290,10 @@ func GetAllTask() gin.HandlerFunc {
 			if err := cursor.Err(); err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"success": false, "error": err.Error()})
 				return
+			}
+
+			if len(tasks) == 0 {
+				tasks = []models.Task{}
 			}
 
 			response := gin.H{

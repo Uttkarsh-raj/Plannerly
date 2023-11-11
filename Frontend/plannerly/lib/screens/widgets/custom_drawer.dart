@@ -1,19 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:plannerly/bloc/home/home_bloc.dart';
+import 'package:plannerly/screens/home/home.dart';
 import 'package:plannerly/utils/colors/colors.dart';
 
 class CustomDrawer extends StatefulWidget {
-  const CustomDrawer({super.key});
+  const CustomDrawer({super.key, required this.homeBloc});
+  final HomeBloc homeBloc;
 
   @override
   State<CustomDrawer> createState() => _CustomDrawerState();
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
-  List<String> names = ["Home", "Urgent Tasks", "Regular Tasks"];
-  List<IconData> icons = [
-    Icons.home_outlined,
-    Icons.task_alt_outlined,
-    Icons.task_outlined
+  late List<ListTile> tiles = [
+    ListTile(
+      onTap: () {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+        );
+      },
+      leading: const Icon(Icons.home_outlined),
+      title: const Text(
+        "Home",
+        style: TextStyle(
+          color: AppColors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+    ),
+    ListTile(
+      onTap: () {
+        widget.homeBloc.add(HomeUrgentTasksViewAllClickedEvent());
+      },
+      leading: const Icon(Icons.task_alt_outlined),
+      title: const Text(
+        "Urgent Tasks",
+        style: TextStyle(
+          color: AppColors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+    ),
+    ListTile(
+      onTap: () {
+        widget.homeBloc.add(HomeRegularTasksViewAllClickedEvent());
+      },
+      leading: const Icon(Icons.task_outlined),
+      title: const Text(
+        "Regular Tasks",
+        style: TextStyle(
+          color: AppColors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+    ),
   ];
   @override
   Widget build(BuildContext context) {
@@ -46,29 +91,20 @@ class _CustomDrawerState extends State<CustomDrawer> {
               const SizedBox(height: 30),
               Expanded(
                 child: ListView.separated(
-                  itemCount: 3,
+                  itemCount: tiles.length,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      onTap: () {},
-                      leading: Icon(icons[index]),
-                      title: Text(
-                        names[index],
-                        style: const TextStyle(
-                          color: AppColors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    );
+                    return tiles[index];
                   },
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 3),
                 ),
               ),
               ListTile(
-                onTap: () {},
+                onTap: () {
+                  widget.homeBloc.add(HomeLogoutButtonClickedEvent());
+                },
                 leading: const Icon(Icons.logout_outlined),
                 title: const Text(
                   'Logout',

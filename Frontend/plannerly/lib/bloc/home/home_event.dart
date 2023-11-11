@@ -45,3 +45,13 @@ class HomeAddNewTaskAddButtonClickedEvent extends HomeEvent {
 }
 
 class HomeDrawerButtonClickedEvent extends HomeEvent {}
+
+class HomeLogoutButtonClickedEvent extends HomeEvent {}
+
+class HomeSearchButtonClickedEvent extends HomeEvent {}
+
+class SearchForTasksEvent extends HomeEvent {
+  final String searchString;
+
+  SearchForTasksEvent({required this.searchString});
+}

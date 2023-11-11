@@ -15,10 +15,13 @@ class _MainAuthState extends State<MainAuth> {
   void check() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     var token = sp.getString('token');
-    if (token != "") {
-      setState(() {
-        login = true;
-      });
+    print(token);
+    if (token != null) {
+      if (token.isNotEmpty) {
+        setState(() {
+          login = true;
+        });
+      }
     }
   }
 
@@ -30,6 +33,7 @@ class _MainAuthState extends State<MainAuth> {
 
   @override
   Widget build(BuildContext context) {
+    print(login);
     return (login) ? const HomeScreen() : const LoginPage();
   }
 }

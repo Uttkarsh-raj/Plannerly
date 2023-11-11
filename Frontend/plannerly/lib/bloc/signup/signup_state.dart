@@ -11,7 +11,11 @@ class SignupLoading extends SignupState {}
 
 class SignupLoadedSuccess extends SignupState {}
 
-class SignupLoadedError extends SignupState {}
+class SignupLoadedError extends SignupState {
+  final String message;
+
+  SignupLoadedError({required this.message});
+}
 
 class SignupButtonClicked extends SignupActionState {}
 

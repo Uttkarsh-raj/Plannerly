@@ -20,13 +20,15 @@ class HomeLoadedSuccessState extends HomeState {
       totalRegularTasks,
       totalUrgentTasksCompleted,
       totalRegularTasksCompleted;
+  final String name;
   HomeLoadedSuccessState(
       this.regularTasks,
       this.urgentTasks,
       this.totalUrgentTasks,
       this.totalRegularTasks,
       this.totalUrgentTasksCompleted,
-      this.totalRegularTasksCompleted);
+      this.totalRegularTasksCompleted,
+      this.name);
 }
 
 class HomeLoadedErrorState extends HomeState {}
@@ -56,3 +58,21 @@ class HomeNewTaskAddedState extends HomeActionState {}
 class HomePopState extends HomeActionState {}
 
 class HomeTaskAddedSuccessState extends HomeActionState {}
+
+class HomeLogoutButtonClicked extends HomeActionState {}
+
+class SearchLoadingState extends HomeState {}
+
+class SearchSuccessState extends HomeState {
+  final List<TaskModel> regTasks, urgTasks;
+
+  SearchSuccessState({required this.regTasks, required this.urgTasks});
+}
+
+class SearchErrorState extends HomeState {
+  final String message;
+
+  SearchErrorState({required this.message});
+}
+
+class HomeSearchButtonClickedState extends HomeActionState {}

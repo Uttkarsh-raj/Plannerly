@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:plannerly/screens/home/home_loading.dart';
+import 'package:plannerly/screens/login/login.dart';
 import 'package:plannerly/screens/regular_tasks/regular_tasks_page.dart';
+import 'package:plannerly/screens/search/search.dart';
 import 'package:plannerly/screens/urgent_tasks/urgent_tasks_page.dart';
 import 'package:plannerly/screens/widgets/custom_drawer.dart';
 import 'package:plannerly/screens/widgets/form_field.dart';
@@ -178,7 +180,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             desc: descContr.text.trim().toString(),
                             date: dateContr.text.trim().toString(),
                             time: timeContr.text.trim().toString(),
-                            urgent: urgContr.text.trim().toString(),
+                            urgent:
+                                urgContr.text.trim().toLowerCase().toString(),
                           ),
                         );
                       } else {
@@ -212,6 +215,18 @@ class _HomeScreenState extends State<HomeScreen> {
           homeBloc.add(HomeInitialEvent());
         } else if (state is HomeDrawerButtonClickedState) {
           _scaffoldKey.currentState?.openDrawer();
+        } else if (state is HomeLogoutButtonClicked) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const LoginPage(),
+            ),
+          );
+        } else if (state is HomeSearchButtonClickedState) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const SearchPage(),
+            ),
+          );
         }
       },
       builder: (context, state) {
@@ -222,7 +237,9 @@ class _HomeScreenState extends State<HomeScreen> {
             final successState = state as HomeLoadedSuccessState;
             return Scaffold(
               key: _scaffoldKey,
-              drawer: const CustomDrawer(),
+              drawer: CustomDrawer(
+                homeBloc: homeBloc,
+              ),
               backgroundColor: AppColors.backgroundDark,
               body: Padding(
                 padding: const EdgeInsets.all(14.0),
@@ -260,9 +277,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                             SizedBox(height: size.height * 0.03),
-                            const Text(
-                              "Hi, Jason",
-                              style: TextStyle(
+                            Text(
+                              "Hi, ${state.name}",
+                              style: const TextStyle(
                                 color: AppColors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w300,
@@ -278,41 +295,55 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             SizedBox(height: size.height * 0.038),
-                            Center(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: AppColors.backgroundLight,
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Expanded(
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            hintText: 'Search task',
-                                            hintStyle: TextStyle(
-                                              color: AppColors.grey,
-                                              fontSize: 18,
+                            GestureDetector(
+                              onTap: () {
+                                homeBloc.add(HomeSearchButtonClickedEvent());
+                              },
+                              child: Center(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.backgroundLight,
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Expanded(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(10.0),
+                                            child: Text(
+                                              'Search task',
+                                              style: TextStyle(
+                                                color: AppColors.grey,
+                                                fontSize: 18,
+                                              ),
+                                              // decoration: InputDecoration(
+                                              //   border: InputBorder.none,
+                                              //   hintText: 'Search task',
+                                              //   hintStyle: TextStyle(
+                                              //     color: AppColors.grey,
+                                              //     fontSize: 18,
+                                              //   ),
+                                              //   contentPadding:
+                                              //       EdgeInsets.all(10),
+                                              // ),
                                             ),
-                                            contentPadding: EdgeInsets.all(10),
                                           ),
                                         ),
-                                      ),
-                                      IconButton(
-                                        onPressed: () {},
-                                        icon: Icon(
-                                          Icons.search_outlined,
-                                          size: 28,
-                                          color:
-                                              AppColors.white.withOpacity(0.6),
+                                        IconButton(
+                                          onPressed: () {},
+                                          icon: Icon(
+                                            Icons.search_outlined,
+                                            size: 28,
+                                            color: AppColors.white
+                                                .withOpacity(0.6),
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

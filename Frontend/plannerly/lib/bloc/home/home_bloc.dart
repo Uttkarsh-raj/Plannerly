@@ -25,6 +25,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<HomeAddNewTaskAddButtonClickedEvent>(
         homeAddNewTaskAddButtonClickedEvent);
     on<HomeDrawerButtonClickedEvent>(homeDrawerButtonClickedEvent);
+    on<HomeLogoutButtonClickedEvent>(homeLogoutButtonClickedEvent);
+    on<SearchForTasksEvent>(searchForTasksEvent);
+    on<HomeSearchButtonClickedEvent>(homeSearchButtonClickedEvent);
   }
 
   FutureOr<void> homeInitialEvent(
@@ -32,12 +35,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(HomeLoadingState());
     List<TaskModel> regualarTasks = [];
     List<TaskModel> urgentTasks = [];
+
     int totalUrgentTasks = 0,
         totalRegularTasks = 0,
         urgentTasksCompleted = 0,
         regularTasksCompleted = 0;
     SharedPreferences sp = await SharedPreferences.getInstance();
     var token = sp.getString('token')!;
+    String name = sp.getString('userName')!;
     try {
       var uri = Uri.parse("$baseUrl/tasks/urgent");
       var res = await http.get(
@@ -76,7 +81,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       );
       // print("res: ${res.body}");
       var response = jsonDecode(res.body);
-      // print("response: $response");
+      print("response: $response");
       if (response["success"]) {
         List<dynamic> data = response["data"];
         totalRegularTasks = response["total"];
@@ -95,13 +100,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         }).toList();
         emit(
           HomeLoadedSuccessState(
-            regualarTasks,
-            urgentTasks,
-            totalUrgentTasks,
-            totalRegularTasks,
-            urgentTasksCompleted,
-            regularTasksCompleted,
-          ),
+              regualarTasks,
+              urgentTasks,
+              totalUrgentTasks,
+              totalRegularTasks,
+              urgentTasksCompleted,
+              regularTasksCompleted,
+              name),
         );
       } else {
         emit(HomeUnableTofetchTasks(message: response["error"]));
@@ -110,6 +115,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(HomeUnableTofetchTasks(message: "Unable to get the data."));
       log(e.toString());
     }
+    // emit(HomeLoadedSuccessState(regualarTasks, urgentTasks, totalUrgentTasks,
+    //     totalRegularTasks, urgentTasksCompleted, regularTasksCompleted, name));
   }
 
   FutureOr<void> homeUrgentTasksViewAllClickedEvent(
@@ -215,5 +222,78 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   FutureOr<void> homeDrawerButtonClickedEvent(
       HomeDrawerButtonClickedEvent event, Emitter<HomeState> emit) {
     emit(HomeDrawerButtonClickedState());
+  }
+
+  FutureOr<void> homeLogoutButtonClickedEvent(
+      HomeLogoutButtonClickedEvent event, Emitter<HomeState> emit) async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    sp.setString("token", "");
+    sp.setString('userId', "");
+    sp.setString('userName', "");
+    emit(HomeLogoutButtonClicked());
+  }
+
+  FutureOr<void> searchForTasksEvent(
+      SearchForTasksEvent event, Emitter<HomeState> emit) async {
+    List<TaskModel> regTasks = [];
+    List<TaskModel> urgTasks = [];
+    emit(SearchLoadingState());
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    var token = sp.getString('token')!;
+    var uri = Uri.parse(
+      "$baseUrl/search",
+    );
+    try {
+      var res = await http.post(uri,
+          body: jsonEncode({"search": event.searchString}),
+          headers: {"token": token});
+      var response = jsonDecode(res.body);
+      print(res.body);
+      print(response);
+      if (response['success']) {
+        List<dynamic> regs = response['data']['regularTasks'];
+        List<dynamic> urgs = response['data']['urgentTasks'];
+        regTasks = regs
+            .map(
+              (task) => TaskModel(
+                taskId: task["ID"],
+                userId: task["user_id"],
+                title: task["title"],
+                description: task["desc"],
+                time: task["time"],
+                date: task["date"],
+                completed: task["completed"],
+                urgent: task["urgent"],
+              ),
+            )
+            .toList();
+        urgTasks = urgs
+            .map(
+              (task) => TaskModel(
+                taskId: task["ID"],
+                userId: task["user_id"],
+                title: task["title"],
+                description: task["desc"],
+                time: task["time"],
+                date: task["date"],
+                completed: task["completed"],
+                urgent: task["urgent"],
+              ),
+            )
+            .toList();
+        emit(
+          SearchSuccessState(regTasks: regTasks, urgTasks: urgTasks),
+        );
+      } else {
+        emit(SearchErrorState(message: response['error']));
+      }
+    } catch (e) {
+      emit(SearchErrorState(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> homeSearchButtonClickedEvent(
+      HomeSearchButtonClickedEvent event, Emitter<HomeState> emit) {
+    emit(HomeSearchButtonClickedState());
   }
 }

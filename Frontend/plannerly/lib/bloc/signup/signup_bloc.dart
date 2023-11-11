@@ -33,13 +33,12 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       );
       var response = jsonDecode(res.body);
       if (res.statusCode == 200) {
-        emit(SignUpSuccessState());
+        emit(SignupLoadedSuccess());
       } else {
-        emit(SignupShowSnackbar(errorMessage: response['error']));
+        emit(SignupLoadedError(message: response['error']));
       }
     } catch (e) {
-      emit(SignupShowSnackbar(errorMessage: e.toString()));
-      print(e.toString());
+      emit(SignupLoadedError(message: e.toString()));
     }
   }
 

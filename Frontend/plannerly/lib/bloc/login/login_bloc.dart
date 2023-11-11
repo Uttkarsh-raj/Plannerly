@@ -37,6 +37,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         SharedPreferences sp = await SharedPreferences.getInstance();
         sp.setString('token', response['token']);
         sp.setString('userId', response['user_id']);
+        sp.setString(
+            'userName', response['first_name'] + " " + response['last_name']);
         emit(LoginSuccessState());
       } else {
         emit(LoginShowSnackbar(message: response['error']));

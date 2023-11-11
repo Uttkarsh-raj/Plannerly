@@ -75,6 +75,387 @@ class _SignUpPageState extends State<SignUpPage> {
         switch (state.runtimeType) {
           case SignupLoading:
             return const HomeLoading();
+          case SignupLoadedSuccess:
+            return Scaffold(
+              backgroundColor: AppColors.backgroundDark,
+              body: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // SizedBox(height: size.height * 0.12),
+                        Image.asset(
+                          'assets/images/logo_transparent.png',
+                          scale: 3.2,
+                        ),
+                        const Center(
+                          child: Text(
+                            "Welcome to Plannerly !!",
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 25,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Center(
+                          child: Text(
+                            // "Let's get your things planned.",
+                            "Planning Your Way to Productivity.",
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: size.width * 0.8,
+                          child: Column(
+                            children: [
+                              TaskFormField(
+                                title: '',
+                                hint: 'First-name',
+                                controller: fuserName,
+                              ),
+                              TaskFormField(
+                                title: '',
+                                hint: 'Last-name',
+                                controller: luserName,
+                              ),
+                              TaskFormField(
+                                title: '',
+                                hint: 'Phone',
+                                controller: phone,
+                              ),
+                              TaskFormField(
+                                title: '',
+                                hint: 'Email',
+                                controller: email,
+                              ),
+                              TaskFormField(
+                                title: '',
+                                hint: 'Password',
+                                controller: pass,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: size.height * 0.05),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              if (fuserName.text.isNotEmpty &&
+                                  luserName.text.isNotEmpty &&
+                                  email.text.isNotEmpty &&
+                                  pass.text.isNotEmpty &&
+                                  phone.text.isNotEmpty) {
+                                signUpBloc.add(
+                                  SignUpButtonClickedEvent(
+                                    fname: fuserName.text.trim().toString(),
+                                    lname: luserName.text.trim().toString(),
+                                    email: email.text.trim().toString(),
+                                    phone: phone.text.trim().toString(),
+                                    pass: pass.text.trim().toString(),
+                                  ),
+                                );
+                              } else {
+                                var snackBar = SnackBar(
+                                  backgroundColor: Colors.red[500],
+                                  content: const Text(
+                                    "Please fill all the fields.",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              }
+                            },
+                            child: Container(
+                              width: size.width * 0.7,
+                              height: size.height * 0.07,
+                              decoration: BoxDecoration(
+                                color: AppColors.buttonBlue,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "Sign-Up",
+                                  style: TextStyle(
+                                    color: AppColors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: size.width * 0.8,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                size: 25,
+                                color: Colors.green[400],
+                              ),
+                              const SizedBox(width: 5),
+                              Center(
+                                child: SizedBox(
+                                  width: size.width * 0.7,
+                                  child: const Text(
+                                    "Account created successfully! Please login to continue.",
+                                    style: TextStyle(
+                                      color: AppColors.white,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    maxLines: 3,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Already have an account?",
+                                style: TextStyle(
+                                  color: AppColors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  signUpBloc
+                                      .add(SignupPageLoginButtonClickedEvent());
+                                },
+                                child: const Center(
+                                  child: Text(
+                                    "Login",
+                                    style: TextStyle(
+                                      decoration: TextDecoration.underline,
+                                      color: AppColors.buttonBlue,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          case SignupLoadedError:
+            final s = state as SignupLoadedError;
+            return Scaffold(
+              backgroundColor: AppColors.backgroundDark,
+              body: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // SizedBox(height: size.height * 0.12),
+                        Image.asset(
+                          'assets/images/logo_transparent.png',
+                          scale: 3.2,
+                        ),
+                        const Center(
+                          child: Text(
+                            "Welcome to Plannerly !!",
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 25,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Center(
+                          child: Text(
+                            // "Let's get your things planned.",
+                            "Planning Your Way to Productivity.",
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: size.width * 0.8,
+                          child: Column(
+                            children: [
+                              TaskFormField(
+                                title: '',
+                                hint: 'First-name',
+                                controller: fuserName,
+                              ),
+                              TaskFormField(
+                                title: '',
+                                hint: 'Last-name',
+                                controller: luserName,
+                              ),
+                              TaskFormField(
+                                title: '',
+                                hint: 'Phone',
+                                controller: phone,
+                              ),
+                              TaskFormField(
+                                title: '',
+                                hint: 'Email',
+                                controller: email,
+                              ),
+                              TaskFormField(
+                                title: '',
+                                hint: 'Password',
+                                controller: pass,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: size.height * 0.05),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              if (fuserName.text.isNotEmpty &&
+                                  luserName.text.isNotEmpty &&
+                                  email.text.isNotEmpty &&
+                                  pass.text.isNotEmpty &&
+                                  phone.text.isNotEmpty) {
+                                signUpBloc.add(
+                                  SignUpButtonClickedEvent(
+                                    fname: fuserName.text.trim().toString(),
+                                    lname: luserName.text.trim().toString(),
+                                    email: email.text.trim().toString(),
+                                    phone: phone.text.trim().toString(),
+                                    pass: pass.text.trim().toString(),
+                                  ),
+                                );
+                              } else {
+                                var snackBar = SnackBar(
+                                  backgroundColor: Colors.red[500],
+                                  content: const Text(
+                                    "Please fill all the fields.",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              }
+                            },
+                            child: Container(
+                              width: size.width * 0.7,
+                              height: size.height * 0.07,
+                              decoration: BoxDecoration(
+                                color: AppColors.buttonBlue,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  "Sign-Up",
+                                  style: TextStyle(
+                                    color: AppColors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: size.width * 0.8,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                size: 25,
+                                color: Colors.red[400],
+                              ),
+                              const SizedBox(width: 5),
+                              Center(
+                                child: SizedBox(
+                                  width: size.width * 0.7,
+                                  child: Text(
+                                    s.message,
+                                    style: const TextStyle(
+                                      color: AppColors.white,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    maxLines: 3,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Already have an account?",
+                                style: TextStyle(
+                                  color: AppColors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  signUpBloc
+                                      .add(SignupPageLoginButtonClickedEvent());
+                                },
+                                child: const Center(
+                                  child: Text(
+                                    "Login",
+                                    style: TextStyle(
+                                      decoration: TextDecoration.underline,
+                                      color: AppColors.buttonBlue,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
           default:
             return Scaffold(
               backgroundColor: AppColors.backgroundDark,

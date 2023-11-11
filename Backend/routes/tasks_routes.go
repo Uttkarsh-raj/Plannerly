@@ -15,5 +15,5 @@ func TaskRoutes(incomingRoutes *gin.Engine) {
 	incomingRoutes.GET("/tasks/urgent", controllers.GetUrgentTasks())
 	incomingRoutes.GET("/tasks/regular", controllers.GetRegularTasks())
 	incomingRoutes.DELETE("/delete/:id", controllers.DeleteTask())
-	incomingRoutes.GET("/search", controllers.SearchTask())
+	incomingRoutes.POST("/search", controllers.SearchTask())
 }

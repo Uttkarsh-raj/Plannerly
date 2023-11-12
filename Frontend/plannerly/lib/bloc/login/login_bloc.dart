@@ -41,10 +41,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
             'userName', response['first_name'] + " " + response['last_name']);
         emit(LoginSuccessState());
       } else {
-        emit(LoginShowSnackbar(message: response['error']));
+        emit(LoginLoadingErrorState(message: response['error']));
       }
     } catch (e) {
-      emit(LoginShowSnackbar(message: e.toString()));
+      emit(LoginLoadingErrorState(message: e.toString()));
     }
   }
 

@@ -9,6 +9,12 @@ final class LoginInitial extends LoginState {}
 
 class LoginLoadingState extends LoginState {}
 
+class LoginLoadingErrorState extends LoginState {
+  final String message;
+
+  LoginLoadingErrorState({required this.message});
+}
+
 class LoginShowSnackbar extends LoginActionState {
   final String message;
   LoginShowSnackbar({required this.message});

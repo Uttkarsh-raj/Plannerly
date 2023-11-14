@@ -25,14 +25,14 @@ func AddNewTask() gin.HandlerFunc {
 		var task models.Task
 		defer cancel()
 		if err := c.BindJSON(&task); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "success": false})
 			return
 		}
 		log.Print(task)
 		task.ID = primitive.NewObjectID()
 		validationError := validate.Struct(task)
 		if validationError != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": validationError.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": validationError.Error(), "success": false})
 		}
 		resultInsertionNumber, insertErr := taskCollection.InsertOne(ctx, task)
 		if insertErr != nil {
@@ -352,12 +352,12 @@ func SearchTask() gin.HandlerFunc {
 			user_id := claims["Uid"].(string)
 			var reqBody map[string]interface{}
 			if err := c.ShouldBindJSON(&reqBody); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "success": false})
 				return
 			}
 			searchString, ok := reqBody["search"].(string)
 			if !ok {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing 'search' in the request body"})
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing 'search' in the request body", "success": false})
 				return
 			}
 			query := bson.M{
@@ -376,7 +376,7 @@ func SearchTask() gin.HandlerFunc {
 			cursor, err := taskCollection.Find(ctx, query)
 			defer cancel()
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "success": false})
 				return
 			}
 

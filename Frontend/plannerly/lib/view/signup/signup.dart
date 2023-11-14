@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plannerly/bloc/signup/signup_bloc.dart';
-import 'package:plannerly/screens/home/home_loading.dart';
-import 'package:plannerly/screens/login/login.dart';
-import 'package:plannerly/screens/widgets/form_field.dart';
+import 'package:plannerly/view/home/home_loading.dart';
+import 'package:plannerly/view/login/login.dart';
+import 'package:plannerly/view/widgets/form_field.dart';
 import 'package:plannerly/utils/colors/colors.dart';
 
 class SignUpPage extends StatefulWidget {

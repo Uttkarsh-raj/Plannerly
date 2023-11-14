@@ -31,7 +31,11 @@ class HomeLoadedSuccessState extends HomeState {
       this.name);
 }
 
-class HomeLoadedErrorState extends HomeState {}
+class HomeLoadedErrorState extends HomeState {
+  final String error;
+
+  HomeLoadedErrorState({required this.error});
+}
 
 class HomeErrorState extends HomeState {}
 
@@ -76,3 +80,5 @@ class SearchErrorState extends HomeState {
 }
 
 class HomeSearchButtonClickedState extends HomeActionState {}
+
+class HomeLoginButtonClickedState extends HomeActionState {}

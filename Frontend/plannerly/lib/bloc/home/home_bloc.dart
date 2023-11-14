@@ -28,6 +28,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<HomeLogoutButtonClickedEvent>(homeLogoutButtonClickedEvent);
     on<SearchForTasksEvent>(searchForTasksEvent);
     on<HomeSearchButtonClickedEvent>(homeSearchButtonClickedEvent);
+    on<HomeLoginButtonClickedEvent>(homeLoginButtonClickedEvent);
   }
 
   FutureOr<void> homeInitialEvent(
@@ -67,21 +68,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           );
         }).toList();
       } else {
-        emit(HomeUnableTofetchTasks(message: response["error"]));
+        emit(HomeLoadedErrorState(error: response["error"]));
       }
-    } catch (e) {
-      emit(HomeUnableTofetchTasks(message: "Unable to get the data."));
-      log(e.toString());
-    }
 
-    try {
-      var res = await http.get(
+      res = await http.get(
         Uri.parse("$baseUrl/tasks/regular"),
         headers: {"token": token},
       );
       // print("res: ${res.body}");
-      var response = jsonDecode(res.body);
-      print("response: $response");
+      response = jsonDecode(res.body);
+      // print("response: $response");
       if (response["success"]) {
         List<dynamic> data = response["data"];
         totalRegularTasks = response["total"];
@@ -109,10 +105,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               name),
         );
       } else {
-        emit(HomeUnableTofetchTasks(message: response["error"]));
+        emit(HomeLoadedErrorState(error: response["error"]));
       }
     } catch (e) {
-      emit(HomeUnableTofetchTasks(message: "Unable to get the data."));
+      emit(HomeLoadedErrorState(error: e.toString()));
       log(e.toString());
     }
     // emit(HomeLoadedSuccessState(regualarTasks, urgentTasks, totalUrgentTasks,
@@ -295,5 +291,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   FutureOr<void> homeSearchButtonClickedEvent(
       HomeSearchButtonClickedEvent event, Emitter<HomeState> emit) {
     emit(HomeSearchButtonClickedState());
+  }
+
+  FutureOr<void> homeLoginButtonClickedEvent(
+      HomeLoginButtonClickedEvent event, Emitter<HomeState> emit) {
+    emit(HomeLoginButtonClickedState());
   }
 }

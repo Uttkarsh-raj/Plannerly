@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plannerly/bloc/login/login_bloc.dart';
-import 'package:plannerly/screens/home/home.dart';
-import 'package:plannerly/screens/home/home_loading.dart';
-import 'package:plannerly/screens/signup/signup.dart';
-import 'package:plannerly/screens/widgets/form_field.dart';
+import 'package:plannerly/view/home/home.dart';
+import 'package:plannerly/view/home/home_loading.dart';
+import 'package:plannerly/view/signup/signup.dart';
+import 'package:plannerly/view/widgets/form_field.dart';
 import 'package:plannerly/utils/colors/colors.dart';
 
 class LoginPage extends StatefulWidget {

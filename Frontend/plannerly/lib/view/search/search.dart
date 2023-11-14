@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plannerly/bloc/home/home_bloc.dart';
-import 'package:plannerly/screens/widgets/task.dart';
+import 'package:plannerly/view/widgets/task.dart';
 import 'package:plannerly/utils/colors/colors.dart';
 
 class SearchPage extends StatefulWidget {

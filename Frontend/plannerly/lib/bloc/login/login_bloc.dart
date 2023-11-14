@@ -35,10 +35,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       var response = jsonDecode(res.body);
       if (res.statusCode == 200) {
         SharedPreferences sp = await SharedPreferences.getInstance();
-        sp.setString('token', response['token']);
-        sp.setString('userId', response['user_id']);
+        sp.setString('token', response['data']['token']);
+        sp.setString('userId', response['data']['user_id']);
         sp.setString(
-            'userName', response['first_name'] + " " + response['last_name']);
+            'userName',
+            response['data']['first_name'] +
+                " " +
+                response['data']['last_name']);
         emit(LoginSuccessState());
       } else {
         emit(LoginLoadingErrorState(message: response['error']));

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:plannerly/screens/home/home_loading.dart';
-import 'package:plannerly/screens/login/login.dart';
-import 'package:plannerly/screens/regular_tasks/regular_tasks_page.dart';
-import 'package:plannerly/screens/search/search.dart';
-import 'package:plannerly/screens/urgent_tasks/urgent_tasks_page.dart';
-import 'package:plannerly/screens/widgets/custom_drawer.dart';
-import 'package:plannerly/screens/widgets/form_field.dart';
-import 'package:plannerly/screens/widgets/task.dart';
+import 'package:plannerly/view/home/home_loading.dart';
+import 'package:plannerly/view/login/login.dart';
+import 'package:plannerly/view/regular_tasks/regular_tasks_page.dart';
+import 'package:plannerly/view/search/search.dart';
+import 'package:plannerly/view/urgent_tasks/urgent_tasks_page.dart';
+import 'package:plannerly/view/widgets/custom_drawer.dart';
+import 'package:plannerly/view/widgets/form_field.dart';
+import 'package:plannerly/view/widgets/task.dart';
 import 'package:plannerly/utils/colors/colors.dart';
 
 import '../../bloc/home/home_bloc.dart';
@@ -185,14 +184,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       } else {
-                        Fluttertoast.showToast(
-                          msg: "Please provide information for all fields.",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          backgroundColor: AppColors.grey,
-                          textColor: AppColors.backgroundDark,
-                          fontSize: 16.0,
-                        );
+                        // Fluttertoast.showToast(
+                        //   msg: "Please provide information for all fields.",
+                        //   toastLength: Toast.LENGTH_SHORT,
+                        //   gravity: ToastGravity.BOTTOM,
+                        //   backgroundColor: AppColors.grey,
+                        //   textColor: AppColors.backgroundDark,
+                        //   fontSize: 16.0,
+                        // );//TODO: add a mssg of some sort
+                        print('Plz fill the details fully');
                       }
                     },
                     child: const Text(
@@ -225,6 +225,12 @@ class _HomeScreenState extends State<HomeScreen> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => const SearchPage(),
+            ),
+          );
+        } else if (state is HomeLoginButtonClickedState) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const LoginPage(),
             ),
           );
         }
@@ -754,16 +760,63 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             );
           case HomeLoadedErrorState:
+            var s = state as HomeLoadedErrorState;
             return Scaffold(
               backgroundColor: AppColors.backgroundDark,
-              body: Center(
-                child: Text(
-                  'Some error ocurred!',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: AppColors.white.withOpacity(0.3),
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: Colors.red[400],
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          s.error,
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: AppColors.white.withOpacity(0.3),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Please try to login again.",
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            homeBloc.add(HomeLoginButtonClickedEvent());
+                          },
+                          child: const Center(
+                            child: Text(
+                              "Login",
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                color: AppColors.buttonBlue,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
               ),
             );
           default:

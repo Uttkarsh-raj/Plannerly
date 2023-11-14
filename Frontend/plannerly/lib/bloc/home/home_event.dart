@@ -55,3 +55,5 @@ class SearchForTasksEvent extends HomeEvent {
 
   SearchForTasksEvent({required this.searchString});
 }
+
+class HomeLoginButtonClickedEvent extends HomeEvent {}

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:plannerly/screens/home/home.dart';
-import 'package:plannerly/screens/login/login.dart';
+import 'package:plannerly/view/home/home.dart';
+import 'package:plannerly/view/login/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainAuth extends StatefulWidget {

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plannerly/bloc/home/home_bloc.dart';
-import 'package:plannerly/screens/home/home_loading.dart';
-import 'package:plannerly/screens/widgets/task.dart';
+import 'package:plannerly/view/home/home_loading.dart';
+import 'package:plannerly/view/widgets/task.dart';
 import 'package:plannerly/utils/colors/colors.dart';
 
-class RegularTasks extends StatefulWidget {
-  const RegularTasks({super.key});
+class UrgentTasks extends StatefulWidget {
+  const UrgentTasks({super.key});
 
   @override
-  State<RegularTasks> createState() => _RegularTasksState();
+  State<UrgentTasks> createState() => _UrgentTasksState();
 }
 
-class _RegularTasksState extends State<RegularTasks> {
+class _UrgentTasksState extends State<UrgentTasks> {
   final HomeBloc homeBloc = HomeBloc();
   @override
   void initState() {
@@ -105,7 +105,7 @@ class _RegularTasksState extends State<RegularTasks> {
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          "${successState.totalRegularTasksCompleted}/${successState.totalRegularTasks} task completed.",
+                                          "${successState.totalUrgentTasksCompleted}/${successState.totalUrgentTasks} task completed.",
                                           style: TextStyle(
                                             color: AppColors.white
                                                 .withOpacity(0.4),
@@ -123,16 +123,16 @@ class _RegularTasksState extends State<RegularTasks> {
                                         width: size.height * 0.073,
                                         child: CircularProgressIndicator(
                                           value: (successState
-                                                      .totalRegularTasksCompleted ==
+                                                      .totalUrgentTasksCompleted ==
                                                   0)
                                               ? 0
                                               : (successState
-                                                      .totalRegularTasksCompleted /
+                                                      .totalUrgentTasksCompleted /
                                                   successState
-                                                      .totalRegularTasks),
+                                                      .totalUrgentTasks),
                                           strokeWidth: 7,
                                           valueColor: AlwaysStoppedAnimation(
-                                              Colors.green[400]),
+                                              Colors.red[400]),
                                           backgroundColor:
                                               AppColors.white.withOpacity(0.2),
                                           color: AppColors.white,
@@ -147,7 +147,7 @@ class _RegularTasksState extends State<RegularTasks> {
                                                         .totalUrgentTasksCompleted ==
                                                     0)
                                                 ? "0%"
-                                                : "${((successState.totalRegularTasksCompleted / successState.totalRegularTasks) * 100).toStringAsFixed(1)}%",
+                                                : "${((successState.totalUrgentTasksCompleted / successState.totalUrgentTasks) * 100).toStringAsFixed(1)}%",
                                             style: TextStyle(
                                               color: AppColors.white
                                                   .withOpacity(0.8),
@@ -166,7 +166,7 @@ class _RegularTasksState extends State<RegularTasks> {
                         ),
                         SizedBox(height: size.height * 0.03),
                         const Text(
-                          "Regular Tasks",
+                          "Urgent Tasks",
                           style: TextStyle(
                             color: AppColors.white,
                             fontSize: 24,
@@ -177,10 +177,10 @@ class _RegularTasksState extends State<RegularTasks> {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) => Task(
-                            task: successState.regularTasks[index],
+                            task: successState.urgentTasks[index],
                             bloc: homeBloc,
                           ),
-                          itemCount: successState.totalRegularTasks,
+                          itemCount: successState.totalUrgentTasks,
                           separatorBuilder: (BuildContext context, int index) {
                             return const SizedBox(height: 15);
                           },

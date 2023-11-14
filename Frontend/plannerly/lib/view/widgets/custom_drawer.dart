@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plannerly/bloc/home/home_bloc.dart';
-import 'package:plannerly/screens/home/home.dart';
+import 'package:plannerly/view/home/home.dart';
 import 'package:plannerly/utils/colors/colors.dart';
 
 class CustomDrawer extends StatefulWidget {

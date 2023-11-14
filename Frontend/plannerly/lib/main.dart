@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-// import 'package:plannerly/models/local_notifications.dart';
+import 'package:plannerly/models/local_notifications.dart';
 import 'package:plannerly/view/widgets/check_login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await LocalNotifications.init();
+  await LocalNotifications.init();
   runApp(const MyApp());
 }
 

@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:plannerly/models/local_notifications.dart';
 import 'package:plannerly/models/task_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:plannerly/utils/server/server_constants.dart';
@@ -94,6 +95,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             urgent: task["urgent"],
           );
         }).toList();
+        await LocalNotifications.scheduleNotifications(
+          body: "hello",
+          title: "there",
+          payload: "Good Morning",
+          year: 2023,
+          month: 11,
+          day: 14,
+          hour: 18,
+          minutes: 43,
+          seconds: 00,
+        ); //TODO:send utc times and only in the future..and add this to the add new notification
         emit(
           HomeLoadedSuccessState(
               regualarTasks,

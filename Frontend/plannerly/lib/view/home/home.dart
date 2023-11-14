@@ -763,60 +763,98 @@ class _HomeScreenState extends State<HomeScreen> {
             var s = state as HomeLoadedErrorState;
             return Scaffold(
               backgroundColor: AppColors.backgroundDark,
-              body: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: Colors.red[400],
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          s.error,
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: AppColors.white.withOpacity(0.3),
+              body: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: Colors.red[400],
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Please try to login again.",
-                          style: TextStyle(
-                            color: AppColors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            homeBloc.add(HomeLoginButtonClickedEvent());
-                          },
-                          child: const Center(
+                          const SizedBox(width: 10),
+                          Expanded(
                             child: Text(
-                              "Login",
+                              s.error,
+                              maxLines: 3,
                               style: TextStyle(
-                                decoration: TextDecoration.underline,
-                                color: AppColors.buttonBlue,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
+                                fontSize: 20,
+                                color: AppColors.white.withOpacity(0.3),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  )
-                ],
+                    const SizedBox(height: 10),
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Try to refresh.",
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              homeBloc.add(HomeInitialEvent());
+                            },
+                            child: const Center(
+                              child: Text(
+                                "Refresh",
+                                style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  color: AppColors.buttonBlue,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Please try to login again.",
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              homeBloc.add(HomeLoginButtonClickedEvent());
+                            },
+                            child: const Center(
+                              child: Text(
+                                "Login",
+                                style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  color: AppColors.buttonBlue,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           default:

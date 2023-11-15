@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:plannerly/view/home/home_loading.dart';
 import 'package:plannerly/view/login/login.dart';
 import 'package:plannerly/view/regular_tasks/regular_tasks_page.dart';
@@ -168,31 +170,57 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   TextButton(
                     onPressed: () {
+                      DateTime now = DateTime.now();
+                      DateTime currentDate = DateTime(now.year, now.month,
+                          now.day, now.hour, now.minute, now.second);
                       if (titleContr.text.isNotEmpty &&
                           descContr.text.isNotEmpty &&
                           dateContr.text.isNotEmpty &&
                           timeContr.text.isNotEmpty &&
                           urgContr.text.isNotEmpty) {
-                        homeBloc.add(
-                          HomeAddNewTaskAddButtonClickedEvent(
-                            title: titleContr.text.trim().toString(),
-                            desc: descContr.text.trim().toString(),
-                            date: dateContr.text.trim().toString(),
-                            time: timeContr.text.trim().toString(),
-                            urgent:
-                                urgContr.text.trim().toLowerCase().toString(),
-                          ),
-                        );
+                        DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+                        DateFormat timeFormat = DateFormat('HH:mm:ss');
+                        DateTime inputDate = dateFormat.parse(dateContr.text);
+                        DateTime inputTime = timeFormat.parse(timeContr.text);
+                        DateTime dateTime = DateTime(
+                            inputDate.year,
+                            inputDate.month,
+                            inputDate.day,
+                            inputTime.hour,
+                            inputTime.minute,
+                            inputTime.second);
+                        if (dateTime.isAfter(currentDate)) {
+                          homeBloc.add(
+                            HomeAddNewTaskAddButtonClickedEvent(
+                              title: titleContr.text.trim().toString(),
+                              desc: descContr.text.trim().toString(),
+                              date: dateContr.text.trim().toString(),
+                              time: timeContr.text.trim().toString(),
+                              urgent:
+                                  urgContr.text.trim().toLowerCase().toString(),
+                            ),
+                          );
+                        } else {
+                          Fluttertoast.showToast(
+                            msg: "Date and time must be in the future.",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            backgroundColor: AppColors.grey,
+                            textColor: AppColors.backgroundDark,
+                            fontSize: 16.0,
+                          );
+                          print("Date and time must be in the future.");
+                        }
                       } else {
-                        // Fluttertoast.showToast(
-                        //   msg: "Please provide information for all fields.",
-                        //   toastLength: Toast.LENGTH_SHORT,
-                        //   gravity: ToastGravity.BOTTOM,
-                        //   backgroundColor: AppColors.grey,
-                        //   textColor: AppColors.backgroundDark,
-                        //   fontSize: 16.0,
-                        // );//TODO: add a mssg of some sort
-                        print('Plz fill the details fully');
+                        print("Please provide information for all fields.");
+                        Fluttertoast.showToast(
+                          msg: "Please provide information for all fields.",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: AppColors.grey,
+                          textColor: AppColors.backgroundDark,
+                          fontSize: 16.0,
+                        );
                       }
                     },
                     child: const Text(
@@ -777,13 +805,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.red[400],
                           ),
                           const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              s.error,
-                              maxLines: 3,
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: AppColors.white.withOpacity(0.3),
+                          Center(
+                            child: Expanded(
+                              child: Text(
+                                s.error,
+                                maxLines: 3,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: AppColors.white.withOpacity(0.3),
+                                ),
                               ),
                             ),
                           ),

@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-
+import 'package:intl/intl.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:timezone/timezone.dart' as tz;
 import 'package:plannerly/models/local_notifications.dart';
 import 'package:plannerly/models/task_model.dart';
 import 'package:http/http.dart' as http;
@@ -95,17 +96,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             urgent: task["urgent"],
           );
         }).toList();
-        await LocalNotifications.scheduleNotifications(
-          body: "hello",
-          title: "there",
-          payload: "Good Morning",
-          year: 2023,
-          month: 11,
-          day: 14,
-          hour: 18,
-          minutes: 43,
-          seconds: 00,
-        ); //TODO:send utc times and only in the future..and add this to the add new notification
         emit(
           HomeLoadedSuccessState(
               regualarTasks,
@@ -125,6 +115,31 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
     // emit(HomeLoadedSuccessState(regualarTasks, urgentTasks, totalUrgentTasks,
     //     totalRegularTasks, urgentTasksCompleted, regularTasksCompleted, name));
+  }
+
+  Map<String, int> convertToUtcDateTime(String inputDate, String inputTime) {
+    // Parse input date and time
+    DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+    DateFormat timeFormat = DateFormat('HH:mm:ss');
+    DateTime date = dateFormat.parse(inputDate);
+    DateTime time = timeFormat.parse(inputTime);
+
+    // Combine date and time to create a DateTime object
+    DateTime dateTime = DateTime(
+        date.year, date.month, date.day, time.hour, time.minute, time.second);
+
+    // Convert to UTC
+    tz.TZDateTime utcDateTime = tz.TZDateTime.from(dateTime, tz.UTC);
+
+    // Return separate date and time components as integers
+    return {
+      'utcYear': utcDateTime.year,
+      'utcMonth': utcDateTime.month,
+      'utcDay': utcDateTime.day,
+      'utcHour': utcDateTime.hour,
+      'utcMinute': utcDateTime.minute,
+      'utcSecond': utcDateTime.second,
+    };
   }
 
   FutureOr<void> homeUrgentTasksViewAllClickedEvent(
@@ -221,6 +236,26 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     var response = jsonDecode(res.body);
     print(response);
     if (response["success"] == true) {
+      print(event.date + " " + event.time);
+      Map<String, int> utcDateTimeComponents =
+          convertToUtcDateTime(event.date, event.time);
+      print("UTC Year: ${utcDateTimeComponents['utcYear']}");
+      print("UTC Month: ${utcDateTimeComponents['utcMonth']}");
+      print("UTC Day: ${utcDateTimeComponents['utcDay']}");
+      print("UTC Hour: ${utcDateTimeComponents['utcHour']}");
+      print("UTC Minute: ${utcDateTimeComponents['utcMinute']}");
+      print("UTC Second: ${utcDateTimeComponents['utcSecond']}");
+      await LocalNotifications.scheduleNotifications(
+        body: event.desc,
+        title: event.title,
+        payload: event.desc,
+        year: utcDateTimeComponents['utcYear']!,
+        month: utcDateTimeComponents['utcMonth']!,
+        day: utcDateTimeComponents['utcDay']!,
+        hour: utcDateTimeComponents['utcHour']!,
+        minutes: utcDateTimeComponents['utcMinute']!,
+        seconds: utcDateTimeComponents['utcSecond']!,
+      );
       emit(HomeTaskAddedSuccessState());
     } else {
       emit(HomeUnableTofetchTasks(message: response["error"]));

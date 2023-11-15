@@ -303,10 +303,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                     color: AppColors.white,
                                   ),
                                 ),
-                                const Icon(
-                                  Icons.notifications_outlined,
-                                  size: 28,
-                                  color: AppColors.white,
+                                CircleAvatar(
+                                  radius: 19,
+                                  backgroundColor: AppColors.backgroundDark,
+                                  child: Image.asset(
+                                    'assets/images/logo_transparent.png',
+                                  ),
                                 ),
                               ],
                             ),

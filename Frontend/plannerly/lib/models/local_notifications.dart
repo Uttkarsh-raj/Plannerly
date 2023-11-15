@@ -16,7 +16,7 @@ class LocalNotifications {
   //initialize plugin
   static Future init() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/logo_canva');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     final DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
       onDidReceiveLocalNotification: (id, title, body, payload) => null,

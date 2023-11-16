@@ -209,10 +209,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             textColor: AppColors.backgroundDark,
                             fontSize: 16.0,
                           );
-                          print("Date and time must be in the future.");
                         }
                       } else {
-                        print("Please provide information for all fields.");
                         Fluttertoast.showToast(
                           msg: "Please provide information for all fields.",
                           toastLength: Toast.LENGTH_SHORT,
